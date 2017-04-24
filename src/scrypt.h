@@ -7,7 +7,10 @@
 #include <inttypes.h>
 #include <pthread.h>
 
-void scrypt_1048576_1_1_256(const uint32_t *input, uint32_t *output, unsigned char *scratchpad);
+static const int SCRYPT_SCRATCHPAD_SIZE = 134217791;
+static const int N = 1048576;
+
+void scryptSquaredHash(const uint32_t *input, uint32_t *output);
 extern unsigned char *scrypt_buffer_alloc();
 extern "C" void scrypt_core(uint32_t *X, uint32_t *V, int N);
 int scrypt_best_throughput();

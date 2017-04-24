@@ -29,7 +29,6 @@
 
 #include "scrypt.h"
 #include "sha2.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
@@ -615,4 +614,21 @@ void scrypt_1048576_1_1_256(const uint32_t *pdata, uint32_t *hash, unsigned char
 		else
 #endif
 		scrypt_1024_1_1_256(data, hash, midstate, scratchbuf, N);
+}
+
+void scryptSquaredHash(const uint32_t *input, uint32_t *output)
+{
+    uint32_t midstate[8];
+    unsigned char *scratchbuf = (unsigned char*)malloc((size_t)SCRYPT_SCRATCHPAD_SIZE);
+
+    memset(output, 0, 32);
+    if (!scratchbuf)
+        return;
+
+    sha256_init(midstate);
+    sha256_transform(midstate, input, 0);
+
+    scrypt_1024_1_1_256((uint32_t*)input, (uint32_t*)output, midstate, scratchbuf, N);
+
+    free(scratchbuf);
 }

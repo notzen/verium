@@ -28,13 +28,22 @@
  */
 
 #include "scrypt.h"
-#include "sha2.h"
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
 
 #define SCRYPT_MAX_WAYS 1
 #define scrypt_best_throughput() 1
+
+static const uint32_t sha256_h[8] = {
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+};
+
+void sha256_init(uint32_t *state)
+{
+    memcpy(state, sha256_h, 32);
+}
 
 static const uint32_t keypad[12] = {
 	0x80000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x00000280

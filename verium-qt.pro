@@ -262,7 +262,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/util.h \
     src/uint256.h \
     src/scrypt.h \
-	src/sha2.h \
     src/serialize.h \
     src/strlcpy.h \
     src/main.h \
@@ -415,7 +414,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
 	src/scrypt-x64.S \
 	src/scrypt-x86.S \
 	src/scrypt-arm.S \
-	src/sha2.cpp \
 	src/sha2-x64.S \
 	src/sha2-x86.S \
 	src/sha2-arm.S \

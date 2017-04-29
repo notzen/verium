@@ -7,18 +7,19 @@
 #include <inttypes.h>
 #include <pthread.h>
 
-static const int SCRYPT_SCRATCHPAD_SIZE = 134217791;
+static const int SCRYPT_SCRATCHPAD_SIZE = 134218239;
 static const int N = 1048576;
 
 void scryptSquaredHash(const uint32_t *input, uint32_t *output);
 extern unsigned char *scrypt_buffer_alloc();
 extern "C" void scrypt_core(uint32_t *X, uint32_t *V, int N);
 int scrypt_best_throughput();
+extern "C" void sha256_transform(uint32_t *state, const uint32_t *block, int swap);
 
-#if defined(__x86_64__)
-//#define SCRYPT_MAX_WAYS 12
-//#define HAVE_SCRYPT_3WAY 1
-//#define scrypt_best_throughput() 3;
+/*#if defined(__x86_64__)
+#define SCRYPT_MAX_WAYS 12
+#define HAVE_SCRYPT_3WAY 1
+#define scrypt_best_throughput() 3;
 extern "C" void scrypt_core_3way(uint32_t *X, uint32_t *V, int N);
 
 #if defined(USE_AVX2)
@@ -43,6 +44,19 @@ extern "C" void scrypt_core(uint32_t *X, uint32_t *V, int N);
 #define scrypt_best_throughput() 1
 #endif
 #endif
+/*#if defined(__ARM_NEON__) || defined(__ALTIVEC__) || defined(__i386__) || defined(__x86_64__)
+#define HAVE_SHA256_4WAY 1
+extern "C" int sha256_use_4way();
+extern "C" void sha256_init_4way(uint32_t *state);
+extern "C" void sha256_transform_4way(uint32_t *state, const uint32_t *block, int swap);
+#endif
+
+#if defined(__x86_64__) && defined(USE_AVX2)
+#define HAVE_SHA256_8WAY 1
+extern "C" int sha256_use_8way();
+extern "C" void sha256_init_8way(uint32_t *state);
+extern "C" void sha256_transform_8way(uint32_t *state, const uint32_t *block, int swap);
+#endif*/
 
 static inline uint32_t scrypt_le32dec(const void *pp)
 {

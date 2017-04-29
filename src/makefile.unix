@@ -136,7 +136,6 @@ OBJS= \
     obj/walletdb.o \
     obj/noui.o \
     obj/scrypt.o \
-    obj/sha2.o \
 
 all: veriumd
 

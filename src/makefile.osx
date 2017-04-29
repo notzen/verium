@@ -86,7 +86,6 @@ OBJS= \
     obj/walletdb.o \
     obj/noui.o \
     obj/scrypt.o \
-    obj/sha2.o \
 
 ifndef USE_UPNP
 	override USE_UPNP = -
@@ -125,9 +124,6 @@ obj/scrypt-x64.o: scrypt-x64.S
 
 obj/scrypt-arm.o: scrypt-arm.S
 	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
-
-obj/scrypt-asm.o: scrypt-asm.cpp
-	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
 	
 OBJS += obj/sha2-arm.o obj/sha2-x86.o obj/sha2-x64.o
 
@@ -138,9 +134,6 @@ obj/sha2-x64.o: sha2-x64.S
 	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
 
 obj/sha2-arm.o: sha2-arm.S
-	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
-
-obj/sha2.o: sha2.c
 	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
 
 DEFS += -DUSE_ASM

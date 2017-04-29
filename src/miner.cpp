@@ -529,7 +529,7 @@ void Miner(CWallet *pwallet)
                 while (fGenerateVerium)
                 {
                     // scrypt^2
-                    scryptSquaredHash(CUINTBEGIN(pblock->nVersion), UINTBEGIN(thash));
+                    scryptSquaredHash(BEGIN(pblock->nVersion), BEGIN(thash));
 
                     if (thash <= hashTarget)
                     {

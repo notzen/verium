@@ -2275,7 +2275,7 @@ bool LoadBlockIndex(bool fAllowNew)
 
                 while (true)
                 {
-                    scryptSquaredHash(CUINTBEGIN(block.nVersion), UINTBEGIN(thash));
+                    scryptSquaredHash(BEGIN(block.nVersion), BEGIN(thash));
     
                     if (thash <= hashTarget)
                         break;

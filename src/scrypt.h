@@ -5,12 +5,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <inttypes.h>
-#include <pthread.h>
 
 static const int SCRYPT_SCRATCHPAD_SIZE = 134218239;
 static const int N = 1048576;
 
-void scryptSquaredHash(const uint32_t *input, uint32_t *output);
+void scryptSquaredHash(const void *input, char *output);
 extern unsigned char *scrypt_buffer_alloc();
 extern "C" void scrypt_core(uint32_t *X, uint32_t *V, int N);
 int scrypt_best_throughput();
@@ -57,38 +56,6 @@ extern "C" int sha256_use_8way();
 extern "C" void sha256_init_8way(uint32_t *state);
 extern "C" void sha256_transform_8way(uint32_t *state, const uint32_t *block, int swap);
 #endif*/
-
-static inline uint32_t scrypt_le32dec(const void *pp)
-{
-        const uint8_t *p = (uint8_t const *)pp;
-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
-}
-
-static inline void scrypt_le32enc(void *pp, uint32_t x)
-{
-        uint8_t *p = (uint8_t *)pp;
-        p[0] = x & 0xff;
-        p[1] = (x >> 8) & 0xff;
-        p[2] = (x >> 16) & 0xff;
-        p[3] = (x >> 24) & 0xff;
-}
-
-static inline uint32_t be32dec(const void *pp)
-{
-	const uint8_t *p = (uint8_t const *)pp;
-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
-}
-
-static inline void be32enc(void *pp, uint32_t x)
-{
-	uint8_t *p = (uint8_t *)pp;
-	p[3] = x & 0xff;
-	p[2] = (x >> 8) & 0xff;
-	p[1] = (x >> 16) & 0xff;
-	p[0] = (x >> 24) & 0xff;
-}
 
 #if ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
 #define WANT_BUILTIN_BSWAP

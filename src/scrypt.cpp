@@ -113,7 +113,7 @@ static inline void PBKDF2_SHA256_80_128(const uint32_t *tstate,
 }
 
 static inline void PBKDF2_SHA256_128_32(uint32_t *tstate, uint32_t *ostate,
-	const uint32_t *salt, uint32_t *output)
+    const uint32_t *salt, uint32_t *output)
 {
 	uint32_t buf[16];
 	int i;
@@ -393,8 +393,7 @@ unsigned char *scrypt_buffer_alloc()
     return (unsigned char*)malloc((size_t)1048576 * SCRYPT_MAX_WAYS * 128 + 63);
 }
 
-static void scrypt_1024_1_1_256(const uint32_t *input, uint32_t *output,
-    uint32_t *midstate, unsigned char *scratchpad, int N)
+static void scrypt_1024_1_1_256(const uint32_t *input, uint32_t *output, uint32_t *midstate, unsigned char *scratchpad, int N)
 {
 	uint32_t tstate[8], ostate[8];
 	uint32_t X[32] __attribute__((aligned(128)));
@@ -408,7 +407,7 @@ static void scrypt_1024_1_1_256(const uint32_t *input, uint32_t *output,
 
 	scrypt_core(X, V, N);
 
-	PBKDF2_SHA256_128_32(tstate, ostate, X, output);
+    PBKDF2_SHA256_128_32(tstate, ostate, X, output);
 }
 
 #ifdef HAVE_SHA256_4WAY
@@ -625,7 +624,7 @@ void scrypt_1048576_1_1_256(const uint32_t *pdata, uint32_t *hash, unsigned char
 		scrypt_1024_1_1_256(data, hash, midstate, scratchbuf, N);
 }
 
-void scryptSquaredHash(const uint32_t *input, uint32_t *output)
+void scryptSquaredHash(const void *input, char *output)
 {
     uint32_t midstate[8];
     unsigned char *scratchbuf = (unsigned char*)malloc((size_t)SCRYPT_SCRATCHPAD_SIZE);
@@ -635,7 +634,7 @@ void scryptSquaredHash(const uint32_t *input, uint32_t *output)
         return;
 
     sha256_init(midstate);
-    sha256_transform(midstate, input, 0);
+    sha256_transform(midstate, (uint32_t*)input, 0);
 
     scrypt_1024_1_1_256((uint32_t*)input, (uint32_t*)output, midstate, scratchbuf, N);
 

@@ -58,6 +58,31 @@ static const uint32_t finalblk[16] = {
 	0x00000001, 0x80000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x00000620
 };
 
+static inline uint32_t le32dec(const void *pp)
+{
+        const uint8_t *p = (uint8_t const *)pp;
+        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+}
+
+static inline void le32enc(void *pp, uint32_t x)
+{
+        uint8_t *p = (uint8_t *)pp;
+        p[0] = x & 0xff;
+        p[1] = (x >> 8) & 0xff;
+        p[2] = (x >> 16) & 0xff;
+        p[3] = (x >> 24) & 0xff;
+}
+
+static inline void be32enc(void *pp, uint32_t x)
+{
+    uint8_t *p = (uint8_t *)pp;
+    p[3] = x & 0xff;
+    p[2] = (x >> 8) & 0xff;
+    p[1] = (x >> 16) & 0xff;
+    p[0] = (x >> 24) & 0xff;
+}
+
 static inline void HMAC_SHA256_80_init(const uint32_t *key,
 	uint32_t *tstate, uint32_t *ostate)
 {
@@ -395,19 +420,30 @@ unsigned char *scrypt_buffer_alloc()
 
 static void scrypt_1024_1_1_256(const uint32_t *input, uint32_t *output, uint32_t *midstate, unsigned char *scratchpad, int N)
 {
+    uint32_t B[128];
 	uint32_t tstate[8], ostate[8];
 	uint32_t X[32] __attribute__((aligned(128)));
-	uint32_t *V;
+    uint32_t *V, k;
 	
 	V = (uint32_t *)(((uintptr_t)(scratchpad) + 63) & ~ (uintptr_t)(63));
 
 	memcpy(tstate, midstate, 32);
 	HMAC_SHA256_80_init(input, tstate, ostate);
-	PBKDF2_SHA256_80_128(tstate, ostate, input, X);
+    PBKDF2_SHA256_80_128(tstate, ostate, input, B);
+
+    for (k = 0; k < 32; k++)
+    {
+        X[k] = le32dec(&B[4 * k]);
+    }
 
 	scrypt_core(X, V, N);
 
-    PBKDF2_SHA256_128_32(tstate, ostate, X, output);
+    for (k = 0; k < 32; k++)
+    {
+        le32enc(&B[4 * k], X[k]);
+    }
+
+    PBKDF2_SHA256_128_32(tstate, ostate, B, output);
 }
 
 #ifdef HAVE_SHA256_4WAY

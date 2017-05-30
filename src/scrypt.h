@@ -57,19 +57,12 @@ extern "C" void sha256_init_8way(uint32_t *state);
 extern "C" void sha256_transform_8way(uint32_t *state, const uint32_t *block, int swap);
 #endif*/
 
-#if ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
-#define WANT_BUILTIN_BSWAP
-#else
+
 #define bswap_32(x) ((((x) << 24) & 0xff000000u) | (((x) << 8) & 0x00ff0000u) \
                    | (((x) >> 8) & 0x0000ff00u) | (((x) >> 24) & 0x000000ffu))
-#endif
 
 static inline uint32_t swab32(uint32_t v)
 {
-#ifdef WANT_BUILTIN_BSWAP
-    return __builtin_bswap32(v);
-#else
     return bswap_32(v);
-#endif
 }
 #endif

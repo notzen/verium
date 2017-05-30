@@ -83,6 +83,13 @@ static inline void be32enc(void *pp, uint32_t x)
     p[0] = (x >> 24) & 0xff;
 }
 
+static inline uint32_t be32dec(const void *pp)
+{
+    const uint8_t *p = (uint8_t const *)pp;
+    return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
+        ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
+}
+
 static inline void HMAC_SHA256_80_init(const uint32_t *key,
 	uint32_t *tstate, uint32_t *ostate)
 {
@@ -663,16 +670,20 @@ void scrypt_1048576_1_1_256(const uint32_t *pdata, uint32_t *hash, unsigned char
 void scryptSquaredHash(const void *input, char *output)
 {
     uint32_t midstate[8];
+    uint32_t data[20];
     unsigned char *scratchbuf = (unsigned char*)malloc((size_t)SCRYPT_SCRATCHPAD_SIZE);
 
     memset(output, 0, 32);
     if (!scratchbuf)
         return;
 
-    sha256_init(midstate);
-    sha256_transform(midstate, (uint32_t*)input, 0);
+    for (int i = 0; i < 19; i++)
+        data[i] = be32dec(&((const uint32_t *)input)[i]);
 
-    scrypt_1024_1_1_256((uint32_t*)input, (uint32_t*)output, midstate, scratchbuf, N);
+    sha256_init(midstate);
+    sha256_transform(midstate, data, 0);
+
+    scrypt_1024_1_1_256(data, (uint32_t*)output, midstate, scratchbuf, N);
 
     free(scratchbuf);
 }
